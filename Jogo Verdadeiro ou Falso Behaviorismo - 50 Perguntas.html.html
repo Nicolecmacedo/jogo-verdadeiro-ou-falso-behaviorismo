@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<title>Jogo Verdadeiro ou Falso: Behaviorismo - 50 Perguntas</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #4b79a1, #283e51);
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  #game-container {
+    background: #1a2a6c;
+    width: 95vw;
+    max-width: 480px;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 85vh;
+  }
+  #question {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    min-height: 80px;
+  }
+  .btn-group {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+  button {
+    background-color: #007bff;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.2rem;
+    padding: 15px 30px;
+    width: 130px;
+    box-shadow: 0 5px 10px rgba(0, 123, 255, 0.6);
+    transition: background-color 0.3s ease;
+    user-select: none;
+  }
+  button:hover:not(:disabled) {
+    background-color: #0056b3;
+    cursor: pointer;
+  }
+  button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+  }
+  #feedback {
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: center;
+    height: 2rem;
+    min-height: 40px;
+    margin-bottom: 10px;
+  }
+  #score {
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  #next-btn {
+    background-color: #28a745;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.2rem;
+    padding: 12px 30px;
+    margin: 0 auto;
+    width: 180px;
+    box-shadow: 0 5px 10px rgba(40, 167, 69, 0.6);
+    user-select: none;
+    display: none;
+  }
+  #next-btn:hover {
+    background-color: #1e7e34;
+    cursor: pointer;
+  }
+  #restart-btn {
+    background-color: #ffc107;
+    border: none;
+    border-radius: 10px;
+    color: #212529;
+    font-size: 1.2rem;
+    padding: 12px 30px;
+    margin: 10px auto 0;
+    width: 180px;
+    box-shadow: 0 5px 10px rgba(255, 193, 7, 0.6);
+    display: none;
+    user-select: none;
+  }
+  #restart-btn:hover {
+    background-color: #d39e00;
+    cursor: pointer;
+  }
+  footer {
+    text-align: center;
+    font-size: 0.85rem;
+    padding-top: 10px;
+    color: #ccc;
+  }
+  @media (max-height: 600px) {
+    #game-container {
+      height: 90vh;
+      padding: 15px;
+    }
+    #question {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+    }
+    button, #next-btn, #restart-btn {
+      padding: 12px 20px;
+      font-size: 1rem;
+      width: 120px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="score">Pergunta 1 de 50 - Pontos: 0</div>
+    <div id="question">Carregando pergunta...</div>
+    <div class="btn-group">
+      <button id="btn-true" aria-label="Verdadeiro">Verdadeiro</button>
+      <button id="btn-false" aria-label="Falso">Falso</button>
+    </div>
+    <div id="feedback" role="alert" aria-live="assertive"></div>
+    <button id="next-btn">Próxima</button>
+    <button id="restart-btn">Reiniciar Jogo</button>
+  </div>
+  <footer>Desenvolvido para o P1 - <a href="estude" target="_blank" rel="noopener" style="color:#ffc107;">Seu Link</a></footer>
+
+<script>
+  const questions = [
+    {q: "O behaviorismo estuda apenas o comportamento observável, ignorando processos mentais.", answer: true},
+    {q: "John B. Watson é conhecido como o pai do behaviorismo.", answer: true},
+    {q: "O condicionamento clássico foi demonstrado através dos experimentos de Skinner.", answer: false},
+    {q: "Ivan Pavlov conduziu experimentos que demonstram o condicionamento clássico.", answer: true},
+    {q: "O condicionamento operante envolve modificar o comportamento através de recompensas e punições.", answer: true},
+    {q: "B.F. Skinner é famoso por estudar o condicionamento operante usando a \"caixa de Skinner\".", answer: true},
+    {q: "Reforço positivo envolve retirar um estímulo aversivo após o comportamento.", answer: false},
+    {q: "Punição negativa envolve a remoção de um estímulo agradável após um comportamento.", answer: true},
+    {q: "O behaviorismo considera as emoções como fundamentais para explicar o comportamento.", answer: false},
+    {q: "A terapia comportamental busca modificar comportamentos utilizando princípios do behaviorismo.", answer: true},
+    {q: "No condicionamento clássico, o estímulo condicionado originalmente não provoca resposta até o aprendizado.", answer: true},
+    {q: "Reforço negativo diminui a probabilidade de um comportamento ocorrer novamente.", answer: false},
+    {q: "Punição positiva adiciona um estímulo desagradável para reduzir um comportamento.", answer: true},
+    {q: "Modelagem é a técnica de reforçar aproximações sucessivas de um comportamento.", answer: true},
+    {q: "A extinção ocorre quando um comportamento continua a ser reforçado de forma constante.", answer: false},
+    {q: "O comportamento reflexo é uma resposta automática a um estímulo.", answer: true},
+    {q: "O condicionamento operante baseia-se somente nos reforços positivos.", answer: false},
+    {q: "Ivan Pavlov é conhecido pelo condicionamento operante.", answer: false},
+    {q: "O behaviorismo ignora a observação do comportamento humano.", answer: false},
+    {q: "Reforço contínuo é quando o comportamento é sempre recompensado.", answer: true},
+    {q: "Reforço intermitente pode tornar o comportamento mais resistente à extinção.", answer: true},
+    {q: "O comportamento aprendido só depende da genética, segundo o behaviorismo.", answer: false},
+    {q: "A desensibilização sistemática ajuda a tratar fobias.", answer: true},
+    {q: "Punição positiva adiciona um reforço para aumentar comportamento.", answer: false},
+    {q: "Skinner usou a caixa para estudar o condicionamento operante.", answer: true},
+    {q: "O behaviorismo aceita a importância da mente humana nos seus estudos.", answer: false},
+    {q: "Refletir sobre as emoções é central no behaviorismo.", answer: false},
+    {q: "Reforço negativo remove um estímulo desagradável para incentivar um comportamento.", answer: true},
+    {q: "A teoria do aprendizado social diz que aprendemos observando outros.", answer: true},
+    {q: "Reforço primário satisfaz necessidades básicas, como comida.", answer: true},
+    {q: "Punição negativa acrescenta algo desagradável após comportamento.", answer: false},
+    {q: "Behaviorismo é considerado reducionista por críticos.", answer: true},
+    {q: "A generalização da resposta ocorre no condicionamento clássico.", answer: true},
+    {q: "Discriminação é quando a resposta ocorre para todos os estímulos similares.", answer: false},
+    {q: "A modelagem é usada para ensinar novos comportamentos.", answer: true},
+    {q: "O condicionamento operante não usa punições.", answer: false},
+    {q: "A análise do comportamento estuda as relações entre estímulos e respostas.", answer: true},
+    {q: "Punição negativa aumenta a frequência do comportamento.", answer: false},
+    {q: "O reforço positivo diminui a frequência do comportamento.", answer: false},
+    {q: "Ivan Pavlov estudou cães para entender o condicionamento clássico.", answer: true},
+    {q: "No condicionamento clássico, a resposta é reflexiva.", answer: true},
+    {q: "Skinner acreditava que o comportamento poderia ser previsto e controlado.", answer: true},
+    {q: "Em um reforço intermitente, o comportamento é recompensado todas as vezes.", answer: false},
+    {q: "O reforço é qualquer consequência que aumenta a probabilidade de repetição do comportamento.", answer: true},
+    {q: "O behaviorismo foi a base para terapias cognitivo-comportamentais.", answer: true},
+    {q: "O behaviorismo foca no inconsciente para explicar o comportamento.", answer: false},
+    {q: "No condicionamento clássico, estímulos neutros podem se tornar condicionados.", answer: true},
+    {q: "O reforço negativo retira estímulos agradáveis.", answer: false},
+    {q: "O ambiente é considerado fundamental para o comportamento humano pelo behaviorismo.", answer: true},
+  ];
+
+  let currentQuestionIndex = 0;
+  let score = 0;
+  let answered = false;
+
+  const questionElement = document.getElementById('question');
+  const btnTrue = document.getElementById('btn-true');
+  const btnFalse = document.getElementById('btn-false');
+  const feedbackElement = document.getElementById('feedback');
+  const nextBtn = document.getElementById('next-btn');
+  const restartBtn = document.getElementById('restart-btn');
+  const scoreElement = document.getElementById('score');
+
+  function startGame() {
+    currentQuestionIndex = 0;
+    score = 0;
+    answered = false;
+    nextBtn.style.display = 'none';
+    restartBtn.style.display = 'none';
+    btnTrue.disabled = false;
+    btnFalse.disabled = false;
+    feedbackElement.textContent = '';
+    updateScore();
+    showQuestion();
+  }
+
+  function showQuestion() {
+    questionElement.textContent = questions[currentQuestionIndex].q;
+    feedbackElement.textContent = '';
+    btnTrue.disabled = false;
+    btnFalse.disabled = false;
+    answered = false;
+    nextBtn.style.display = 'none';
+  }
+
+  function updateScore() {
+    scoreElement.textContent = `Pergunta ${currentQuestionIndex + 1} de ${questions.length} - Pontos: ${score}`;
+  }
+
+  function checkAnswer(choice) {
+    if (answered) return;
+    answered = true;
+    btnTrue.disabled = true;
+    btnFalse.disabled = true;
+    if (choice === questions[currentQuestionIndex].answer) {
+      score++;
+      feedbackElement.textContent = "Correto! 🎉";
+      feedbackElement.style.color = "#28a745";
+    } else {
+      feedbackElement.textContent = "Incorreto ❌";
+      feedbackElement.style.color = "#dc3545";
+    }
+    updateScore();
+    if (currentQuestionIndex < questions.length - 1) {
+      nextBtn.style.display = 'block';
+      nextBtn.focus();
+    } else {
+      feedbackElement.textContent += ` Fim do jogo! Sua pontuação final é ${score} de ${questions.length}.`;
+      nextBtn.style.display = 'none';
+      restartBtn.style.display = 'block';
+      restartBtn.focus();
+      questionElement.textContent = "Parabéns por completar o quiz!";
+    }
+  }
+
+  nextBtn.addEventListener('click', () => {
+    currentQuestionIndex++;
+    showQuestion();
+  });
+
+  restartBtn.addEventListener('click', startGame);
+
+  btnTrue.addEventListener('click', () => checkAnswer(true));
+  btnFalse.addEventListener('click', () => checkAnswer(false));
+
+  window.onload = startGame;
+
+</script>
+
+</body>
+</html>
