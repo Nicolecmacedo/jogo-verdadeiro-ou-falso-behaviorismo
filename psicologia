@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Jogo Behaviorismo - Psicologias</title>
+<style>
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #ffd194, #70e1f5);
+    color: #222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 10px;
+  }
+  #app {
+    background: #fff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 350px;
+    max-height: 600px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  }
+  header {
+    background: #ff6f91;
+    color: #fff;
+    padding: 15px;
+    border-radius: 16px 16px 0 0;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+  }
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    scroll-behavior: smooth;
+  }
+  main::-webkit-scrollbar {
+      width: 6px;
+  }
+  main::-webkit-scrollbar-thumb {
+      background-color: #ff6f91;
+      border-radius: 3px;
+  }
+  h2 {
+    color: #ff6f91;
+    margin-top: 0;
+  }
+  p {
+    line-height: 1.4;
+  }
+  button {
+    background: #ff6f91;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 18px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 10px auto 10px auto;
+    display: block;
+    box-shadow: 0 6px #c74a63;
+    transition: background 0.3s ease;
+    user-select: none;
+  }
+  button:active {
+    box-shadow: 0 2px #c74a63;
+    transform: translateY(4px);
+  }
+  .quiz-option {
+    background: #70e1f5;
+    color: #222;
+    margin: 8px 0;
+    padding: 12px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+    box-shadow: 0 4px #43aedf;
+    transition: background-color 0.25s ease;
+  }
+  .quiz-option:hover {
+    background: #4bb0d7;
+    color: white;
+  }
+  .quiz-option.selected {
+    background: #ff6f91;
+    color: white;
+    box-shadow: none;
+    cursor: default;
+  }
+  .quiz-feedback {
+    text-align: center;
+    font-weight: 700;
+    margin-top: 10px;
+    color: #ff6f91;
+  }
+  .hide {
+    display: none;
+  }
+  #footer {
+    background: #ffe7e9;
+    padding: 12px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #888;
+    border-radius: 0 0 16px 16px;
+  }
+</style>
+</head>
+<body>
+  <div id="app" role="main" aria-label="Jogo Behaviorismo">
+    <header>
+      Jogo Behaviorismo
+    </header>
+    <main id="main-content" tabindex="0">
+      <section id="intro-section">
+        <h2>Bem-vindo ao mundo do Behaviorismo!</h2>
+        <p>Este jogo é baseado no livro <em>Psicologias</em> e vai te ajudar a entender os principais conceitos do behaviorismo, testar seus conhecimentos e descobrir qual teórico behaviorista você seria na prática, através de um quiz divertido.</p>
+        <button id="start-btn" aria-label="Começar jogo">Começar</button>
+      </section>
+      <section id="concepts-section" class="hide" aria-live="polite">
+        <h2>Conceitos Básicos do Behaviorismo</h2>
+        <p><strong>Behaviorismo</strong> é uma abordagem da psicologia que foca no comportamento observável e na relação entre estímulos e respostas, ignorando processos mentais internos.</p>
+        <p>Principais teóricos:</p>
+        <ul>
+          <li><strong>John B. Watson</strong>: Pai do behaviorismo clássico, enfatizou o papel dos estímulos ambientais na formação do comportamento.</li>
+          <li><strong>Ivan Pavlov</strong>: Conhecido pelos seus experimentos com condicionamento clássico usando cães e sinos.</li>
+          <li><strong>B.F. Skinner</strong>: Desenvolveu o condicionamento operante, focado no reforço e punição.</li>
+          <li><strong>Edward Thorndike</strong>: Criador da lei do efeito, desenvolvendo a ideia de que comportamentos seguidos de consequências positivas tendem a se repetir.</li>
+        </ul>
+        <button id="quiz-btn" aria-label="Ir para quiz sobre conceitos">Ir para Quiz</button>
+      </section>
+      <section id="quiz-section" class="hide" aria-live="polite">
+        <h2>Quiz: Teste seus conhecimentos</h2>
+        <div id="quiz-question-container"></div>
+        <p id="quiz-feedback" class="quiz-feedback" aria-live="assertive"></p>
+        <button id="next-question-btn" class="hide" aria-label="Próxima pergunta">Próxima</button>
+      </section>
+      <section id="fun-quiz-section" class="hide" aria-live="polite">
+        <h2>Que Behaviorista Você Seria? (Quiz Divertido)</h2>
+        <div id="fun-quiz-question-container"></div>
+        <button id="fun-next-btn" class="hide" aria-label="Próxima pergunta do quiz divertido">Próxima</button>
+      </section>
+      <section id="result-section" class="hide" aria-live="polite">
+        <h2>Resultado do Quiz Divertido</h2>
+        <p id="result-description"></p>
+        <button id="restart-btn" aria-label="Reiniciar jogo">Jogar novamente</button>
+      </section>
+    </main>
+    <div id="footer" aria-hidden="true">
+      Desenvolvido para aulas de psicologia por BLACKBOXAI
+    </div>
+  </div>
+
+<script>
+(() => {
+  const startBtn = document.getElementById('start-btn');
+  const quizBtn = document.getElementById('quiz-btn');
+  const nextQuestionBtn = document.getElementById('next-question-btn');
+  const funNextBtn = document.getElementById('fun-next-btn');
+  const restartBtn = document.getElementById('restart-btn');
+
+  const introSection = document.getElementById('intro-section');
+  const conceptsSection = document.getElementById('concepts-section');
+  const quizSection = document.getElementById('quiz-section');
+  const funQuizSection = document.getElementById('fun-quiz-section');
+  const resultSection = document.getElementById('result-section');
+
+  const quizQuestionContainer = document.getElementById('quiz-question-container');
+  const quizFeedback = document.getElementById('quiz-feedback');
+
+  const funQuizQuestionContainer = document.getElementById('fun-quiz-question-container');
+  const resultDescription = document.getElementById('result-description');
+
+  // Quiz 1: Concepts Quiz - questions, options, correct answer index
+  const quizQuestions = [
+    {
+      question: "O behaviorismo estuda apenas o comportamento observável, ignorando processos mentais.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "John B. Watson é conhecido como o pai do behaviorismo.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "O condicionamento clássico foi demonstrado através dos experimentos de Skinner.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "Ivan Pavlov conduziu experimentos que demonstram o condicionamento clássico.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "O condicionamento operante envolve modificar o comportamento através de recompensas e punições.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "B.F. Skinner é famoso por estudar o condicionamento operante usando a 'caixa de Skinner'.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "Reforço positivo envolve retirar um estímulo aversivo após o comportamento.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "Punição negativa envolve a remoção de um estímulo agradável após um comportamento.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "O behaviorismo considera as emoções como fundamentais para explicar o comportamento.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "A terapia comportamental busca modificar comportamentos utilizando princípios do behaviorismo.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "No condicionamento clássico, o estímulo condicionado originalmente não provoca resposta até o aprendizado.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "Reforço negativo diminui a probabilidade de um comportamento ocorrer novamente.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "Punição positiva adiciona um estímulo desagradável para reduzir um comportamento.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "Modelagem é a técnica de reforçar aproximações sucessivas de um comportamento.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "A extinção ocorre quando um comportamento continua a ser reforçado de forma constante.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "O comportamento reflexo é uma resposta automática a um estímulo.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "O condicionamento operante baseia-se somente nos reforços positivos.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "Ivan Pavlov é conhecido pelo condicionamento operante.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "O behaviorismo ignora a observação do comportamento humano.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "Reforço contínuo é quando o comportamento é sempre recompensado.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "Reforço intermitente pode tornar o comportamento mais resistente à extinção.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "O comportamento aprendido só depende da genética, segundo o behaviorismo.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "A desensibilização sistemática ajuda a tratar fobias.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "Punição positiva adiciona um reforço para aumentar comportamento.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "Skinner usou a caixa para estudar o condicionamento operante.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "O behaviorismo aceita a importância da mente humana nos seus estudos.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "Refletir sobre as emoções é central no behaviorismo.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "Reforço negativo remove um estímulo desagradável para incentivar um comportamento.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "A teoria do aprendizado social diz que aprendemos observando outros.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "Reforço primário satisfaz necessidades básicas, como comida.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "Punição negativa acrescenta algo desagradável após comportamento.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "Behaviorismo é considerado reducionista por críticos.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "A generalização da resposta ocorre no condicionamento clássico.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "Discriminação é quando a resposta ocorre para todos os estímulos similares.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "A modelagem é usada para ensinar novos comportamentos.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "O condicionamento operante não usa punições.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "A análise do comportamento estuda as relações entre estímulos e respostas.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "Punição negativa aumenta a frequência do comportamento.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "O reforço positivo diminui a frequência do comportamento.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "Ivan Pavlov estudou cães para entender o condicionamento clássico.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "No condicionamento clássico, a resposta é reflexiva.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "Skinner acreditava que o comportamento poderia ser previsto e controlado.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "Em um reforço intermitente, o comportamento é recompensado todas as vezes.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "O reforço é qualquer consequência que aumenta a probabilidade de repetição do comportamento.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "O behaviorismo foi a base para terapias cognitivo-comportamentais.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "O behaviorismo foca no inconsciente para explicar o comportamento.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "No condicionamento clássico, estímulos neutros podem se tornar condicionados.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    },
+    {
+      question: "O reforço negativo retira estímulos agradáveis.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 1
+    },
+    {
+      question: "O ambiente é considerado fundamental para o comportamento humano pelo behaviorismo.",
+      options: ["Verdadeiro", "Falso"],
+      answer: 0
+    }
+  ];
+
+  // Quiz 2: Fun Quiz to determine which behaviorist the user is
+  const funQuizQuestions = [
+    {
+      question: "Qual dessas comidas seu behaviorista ideal mais gostava?",
+      options: [
+        "Café forte e simples",
+        "Chá e biscoitos",
+        "Chocolate e doces",
+        "Não se sabe muito, ele era reservado"
+      ],
+      scores: [1, 2, 3, 0]
+    },
+    {
+      question: "Se seu behaviorista fosse um super-herói, seu poder seria:",
+      options: [
+        "Condicionar qualquer comportamento",
+        "Criar respostas automáticas a estímulos",
+        "Reforçar ações para um mundo melhor",
+        "Aprender com a experiência rapidamente"
+      ],
+      scores: [3, 2, 4, 1]
+    },
+    {
+      question: "Qual a curiosidade mais engraçada do seu behaviorista?",
+      options: [
+        "Ele adorava usar chapéus estranhos",
+        "Tornou-se famoso por seu experimento com animais",
+        "Ele escrevia cartas para estudantes usando nomes falsos",
+        "Gostava tanto de gatos que tinha vários em casa"
+      ],
+      scores: [2, 3, 1, 0]
+    },
+    {
+      question: "Qual é a característica que melhor define seu behaviorista?",
+      options: [
+        "Prático e objetivo",
+        "Curioso e observador",
+        "Persistente e inovador",
+        "Calmo e metódico"
+      ],
+      scores: [1, 3, 4, 2]
+    }
+  ];
+
+  // Behaviorists results based on scores from fun quiz
+  const behaviorists = [
+    {
+      name: "John B. Watson",
+      description: "Você é John B. Watson! O pai do behaviorismo clássico, prático e direto, acreditava que o ambiente molda o comportamento. Sempre pronto para um experimento e para provar que a psicologia deveria estudar apenas o observável!"
+    },
+    {
+      name: "Ivan Pavlov",
+      description: "Você é Ivan Pavlov! Famoso por seus experimentos com cães, você acredita no poder dos estímulos para desencadear respostas automáticas. Curioso e meticuloso, seu legado é fundamental para a psicologia experimental."
+    },
+    {
+      name: "B.F. Skinner",
+      description: "Você é B.F. Skinner! Mestre do condicionamento operante, seu foco é no reforço para moldar comportamentos. Inovador e persistente, você é apaixonado por entender como as consequências moldam quem somos."
+    },
+    {
+      name: "Edward Thorndike",
+      description: "Você é Edward Thorndike! Com sua Lei do Efeito, você mostrou que a experiência é fundamental para o aprendizado. Calmo e metódico, você é o pioneiro em relacionar comportamento e consequências."
+    }
+  ];
+
+  // State variables for quizzes
+  let currentQuizIndex = 0;
+  let currentFunQuizIndex = 0;
+  let quizScore = 0;
+  let funQuizScore = 0;
+
+  // Helpers to show/hide sections
+  function showSection(section) {
+    [introSection, conceptsSection, quizSection, funQuizSection, resultSection].forEach(s => {
+      if(s === section){
+        s.classList.remove('hide');
+      } else {
+        s.classList.add('hide');
+      }
+    });
+    // Focus first heading or button for accessibility
+    if(section) {
+      const focusable = section.querySelector('h2,button');
+      if(focusable) focusable.focus();
+    }
+  }
+
+  // Start the game: show concepts section
+  startBtn.addEventListener('click', () => {
+    showSection(conceptsSection);
+  });
+
+  // Move to concepts quiz
+  quizBtn.addEventListener('click', () => {
+    currentQuizIndex = 0;
+    quizScore = 0;
+    showSection(quizSection);
+    showQuizQuestion();
+  });
+
+  // Show quiz question from concepts
+  function showQuizQuestion() {
+    resetQuizUI();
+    const q = quizQuestions[currentQuizIndex];
+    quizQuestionContainer.innerHTML = `<p><strong>Pergunta ${currentQuizIndex + 1}/${quizQuestions.length}:</strong> ${q.question}</p>`;
+    q.options.forEach((option, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-option';
+      btn.innerText = option;
+      btn.type = 'button';
+      btn.setAttribute('aria-pressed', 'false');
+      btn.addEventListener('click', () => selectOption(i, btn));
+      quizQuestionContainer.appendChild(btn);
+    });
+    quizFeedback.textContent = '';
+    nextQuestionBtn.classList.add('hide');
+  }
+
+  function resetQuizUI() {
+    quizFeedback.textContent = '';
+    nextQuestionBtn.disabled = false;
+  }
+
+  // Handle quiz option selection
+  function selectOption(selectedIndex, button) {
+    // Disable all buttons
+    const buttons = quizQuestionContainer.querySelectorAll('button.quiz-option');
+    buttons.forEach(btn => {
+      btn.disabled = true;
+      btn.setAttribute('aria-pressed', 'false');
+    });
+    button.setAttribute('aria-pressed', 'true');
+    button.classList.add('selected');
+
+    const correctIndex = quizQuestions[currentQuizIndex].answer;
+
+    if(selectedIndex === correctIndex) {
+      quizFeedback.textContent = 'Resposta correta! 🎉';
+      quizScore++;
+    } else {
+      quizFeedback.textContent = `Resposta incorreta. A resposta certa é: "${quizQuestions[currentQuizIndex].options[correctIndex]}".`;
+    }
+    nextQuestionBtn.classList.remove('hide');
+  }
+
+  // Next question or move to fun quiz
+  nextQuestionBtn.addEventListener('click', () => {
+    currentQuizIndex++;
+    if(currentQuizIndex < quizQuestions.length) {
+      showQuizQuestion();
+    } else {
+      // Go to fun quiz after concepts quiz
+      currentFunQuizIndex = 0;
+      funQuizScore = 0;
+      showSection(funQuizSection);
+      showFunQuizQuestion();
+    }
+  });
+
+  // Show fun quiz question
+  function showFunQuizQuestion() {
+    funNextBtn.classList.add('hide');
+    funQuizQuestionContainer.innerHTML = '';
+    const q = funQuizQuestions[currentFunQuizIndex];
+    const p = document.createElement('p');
+    p.innerHTML = `<strong>Pergunta ${currentFunQuizIndex + 1}/${funQuizQuestions.length}:</strong> ${q.question}`;
+    funQuizQuestionContainer.appendChild(p);
+
+    q.options.forEach((option, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-option';
+      btn.innerText = option;
+      btn.type = 'button';
+      btn.setAttribute('aria-pressed', 'false');
+      btn.addEventListener('click', () => selectFunOption(i, btn));
+      funQuizQuestionContainer.appendChild(btn);
+    });
+  }
+
+  // Handle fun quiz option selection
+  function selectFunOption(selectedIndex, button) {
+    const buttons = funQuizQuestionContainer.querySelectorAll('button.quiz-option');
+    buttons.forEach(btn => {
+      btn.disabled = true;
+      btn.setAttribute('aria-pressed', 'false');
+    });
+    button.setAttribute('aria-pressed', 'true');
+    button.classList.add('selected');
+
+    // Add to score based on selected option's mapping
+    const q = funQuizQuestions[currentFunQuizIndex];
+    funQuizScore += q.scores[selectedIndex] || 0;
+    
+    funNextBtn.classList.remove('hide');
+  }
+
+  // Next fun quiz question or show result
+  funNextBtn.addEventListener('click', () => {
+    currentFunQuizIndex++;
+    if(currentFunQuizIndex < funQuizQuestions.length) {
+      showFunQuizQuestion();
+    } else {
+      // Calculate final result
+      showFunQuizResult();
+    }
+  });
+
+  function showFunQuizResult() {
+    showSection(resultSection);
+    // Determine which behaviorist based on funQuizScore
+    // Max possible score is 4+2+3+4=13, choose closest behaviorist by score ranges
+    // We will assign ranges roughly equally split into 4 groups for simplicity
+    let idx = 0;
+    if(funQuizScore <= 4){
+      idx = 3; // Thorndike (lowest)
+    } else if(funQuizScore <= 7){
+      idx = 0; // Watson
+    } else if(funQuizScore <= 10){
+      idx = 1; // Pavlov
+    } else {
+      idx = 2; // Skinner (highest)
+    }
+    const res = behaviorists[idx];
+    resultDescription.innerHTML = `<strong>${res.name}</strong><br>${res.description}<br><br>Pontuação total: ${funQuizScore}`;
+  }
+
+  // Restart the game
+  restartBtn.addEventListener('click', () => {
+    currentQuizIndex = 0;
+    quizScore = 0;
+    currentFunQuizIndex = 0;
+    funQuizScore = 0;
+    showSection(introSection);
+  });
+
+  // Initialize with intro section visible
+  showSection(introSection);
+
+  // Keyboard accessibility: enable Enter/Space on buttons
+  document.body.addEventListener('keydown', (e) => {
+    if(e.target.classList.contains('quiz-option') && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      e.target.click();
+    }
+  });
+})();
+</script>
+</body>
+</html>
